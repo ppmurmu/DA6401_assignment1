@@ -1,7 +1,7 @@
 import numpy as np
 
 class FFNN():
-    def __init__(self, epochs, hid_layers, size_hid_layer, w_decay, learning_rate, optimizer, batch_size, weight_init, activation_func):
+    def __init__(self, epochs, hid_layers, size_hid_layer, w_decay, learning_rate, optimizer, batch_size, weight_init, activation_func, output_activation_function="softmax"):
         self.epochs = epochs
         self.hid_layers= hid_layers
         self.size_hid_layer = size_hid_layer 
@@ -11,6 +11,7 @@ class FFNN():
         self.batch_size= batch_size
         self.weight_init= weight_init   #weight initializer
         self.activation_func= activation_func
+        self.output_activation_function= output_activation_function
         self.weights=[]
         self.bias=[]
 
@@ -49,3 +50,30 @@ class FFNN():
             return exp_x / np.sum(exp_x, axis=0)
         else:
             raise Exception("Invalid output activation function")
+
+    #-------forward  propagation code--------------
+    def forward_propagation(self, x):
+        # Initialize lists to store pre-activation and post-activation values
+        self.pre_activation, self.post_activation = [x], [x]
+    
+        # go through each hidden layer
+        for i in range(self.hidden_layers):
+            # Compute pre-activation: z = a_prev * W + b
+            z = np.matmul(self.post_activation[-1], self.weights[i]) + self.biases[i]
+            self.pre_activation.append(z)
+        
+            # Apply activation function to get post-activation
+            self.post_activation.append(self.activation(self.pre_activation[-1]))
+    
+        # Compute pre-activation for output layer
+        z_output = np.matmul(self.post_activation[-1], self.weights[-1]) + self.biases[-1]
+        self.pre_activation.append(z_output)
+    
+        # Apply output activation function (which might be different from hidden layer activation)
+        # For example, softmax for classification or linear for regression
+        self.post_activation.append(self.output_activation(self.pre_activation[-1]))
+
+        # Return the final output of the network
+        return self.post_activation[-1]
+
+		
