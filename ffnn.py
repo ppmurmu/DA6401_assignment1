@@ -1,38 +1,37 @@
-import numpy as np
-
 class FFNN():
-    def __init__(self, epochs, hid_layers, size_hid_layer, w_decay, learning_rate, optimizer, batch_size, weight_init, activation_func, output_activation_function="softmax"):
-        self.epochs = epochs
-        self.hid_layers= hid_layers
+    def __init__(self, hid_layers, size_hid_layer, weight_init, activation_func, output_activation_function="softmax"):
+        self.hidden_layers= hid_layers
         self.size_hid_layer = size_hid_layer 
-        self.w_decay= w_decay
-        self.learning_rate = learning_rate			# Learning rate
-        self.optimizer= optimizer
-        self.batch_size= batch_size
-        self.weight_init= weight_init   #weight initializer
-        self.activation_func= activation_func
+        self.activation_function= activation_func
         self.output_activation_function= output_activation_function
         self.weights=[]
-        self.bias=[]
+        self.biases=[]
+        self.initialize_weights_and_biases( input_size=784, output_size=10, method=weight_init)
 
 
     #-------initialize weights and bias--------
-    def initialize_weights_and_bias(self, input_size, output_size, method="random"):
+    def initialize_weights_and_biases(self, input_size, output_size, method="random"):
         if method == "random":
-            weights = np.random.randn(input_size, output_size)  # Standard normal distribution
+            self.weights.append(np.random.randn(input_size, self.size_hid_layer))
+            for _ in range(self.hidden_layers - 1):
+                self.weights.append(np.random.randn(self.size_hid_layer, self.size_hid_layer))
+            self.weights.append(np.random.randn(self.size_hid_layer, output_size))
         elif method == "xavier":
-            scale = np.sqrt(2 / (input_size + output_size))  # Xavier (Glorot) Initialization
-            weights = np.random.randn(input_size, output_size) * scale
+            for i in range(len(self.weights)):
+                self.weights[i] = self.weights[i] * np.sqrt(1 / self.weights[i].shape[0])
         else:
             raise ValueError("Invalid method. Choose 'random' or 'xavier'.")
-        bias = np.zeros(output_size)
-        return weights, bias
+
+        #biases
+        for _ in range(self.hidden_layers):
+            self.biases.append(np.zeros(self.size_hid_layer))
+        self.biases.append(np.zeros(output_size))
 
 
     
 
     #----------activation function-------------
-    def activation_funcion(self, x):
+    def activation_func(self, x):
         if self.activation_function == "sigmoid":
             return 1 / (1 + np.exp(-x))
         elif self.activation_function == "tanh":
@@ -63,7 +62,7 @@ class FFNN():
             self.pre_activation.append(z)
         
             # Apply activation function to get post-activation
-            self.post_activation.append(self.activation(self.pre_activation[-1]))
+            self.post_activation.append(self.activation_func(self.pre_activation[-1]))
     
         # Compute pre-activation for output layer
         z_output = np.matmul(self.post_activation[-1], self.weights[-1]) + self.biases[-1]
@@ -75,5 +74,3 @@ class FFNN():
 
         # Return the final output of the network
         return self.post_activation[-1]
-
-		
