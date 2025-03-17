@@ -172,6 +172,6 @@ wandb.login()
 
 wandb_id = wandb.sweep(sweep_configuration,entity="cs24m033-iit-madras", project="DA6401-A1")
 
-wandb.agent(wandb_id, function=sweep, count=1)
+wandb.agent(wandb_id, function=sweep, count=5)
 
 wandb.finish()

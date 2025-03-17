@@ -19,6 +19,10 @@ class FFNN():
                 self.weights.append(np.random.randn(self.size_hid_layer, self.size_hid_layer))
             self.weights.append(np.random.randn(self.size_hid_layer, output_size))
         elif method == "xavier":
+            self.weights.append(np.random.randn(input_size, self.size_hid_layer))
+            for _ in range(self.hidden_layers - 1):
+                self.weights.append(np.random.randn(self.size_hid_layer, self.size_hid_layer))
+            self.weights.append(np.random.randn(self.size_hid_layer, output_size))
             for i in range(len(self.weights)):
                 self.weights[i] = self.weights[i] * np.sqrt(1 / self.weights[i].shape[0])
         else:
