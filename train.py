@@ -84,7 +84,6 @@ def sweep():
     # Split training data into training and validation sets (90% train, 10% validation)
     x_train_act, x_val, y_train_act, y_val = train_test_split(x_train, y_train, test_size=0.1, random_state=42)
 
-    #print("Initial Accuracy: {}".format(np.sum(np.argmax(nn.forward_propagation(x_train), axis=1) == np.argmax(y_train, axis=1)) / y_train.shape[0]))
 
     #-----epochs start here-----training loop------
     for epoch in range(epochs):
@@ -130,6 +129,7 @@ def sweep():
     test_accuracy = np.sum(np.argmax(y_pred_test, axis=1) == np.argmax(y_test, axis=1)) / y_test.shape[0]
 
     #printing test accuracy
+    print(f"validation Accuracy: {val_accuracy:.4f}")
     print(f"Test Accuracy: {test_accuracy:.4f}")
 
     #log test results to wandb
@@ -206,15 +206,3 @@ wandb.agent(wandb_id, function=sweep, count=1)
 
 wandb.finish()
 
-
-# if __name__ == "__main__":
-#     args = parse_args()
-#     args_dict = vars(args)  # Convert Namespace to dictionary
-#     args_json = json.dumps(args_dict)  # Convert dictionary to JSON string
-#     #-----print(args)-----
-#     print("-------------------------------arg parse ---------------")
-#     print(args_json)
-#     #------print(config)
-#     print("-------------------------------sweep parse ---------------")
-
-#     print(sweep_configuration)
