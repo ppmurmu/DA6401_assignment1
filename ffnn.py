@@ -47,8 +47,11 @@ class FFNN():
     
     def output_activation(self, x):
         if self.output_activation_function == "softmax":
-            exp_x = np.exp(x - np.max(x)) 
-            return exp_x / np.sum(exp_x, axis=0)
+            max_x = np.max(x, axis=1)
+            max_x = max_x.reshape(max_x.shape[0], 1)
+            exp_x = np.exp(x - max_x)
+            softmax = exp_x / np.sum(exp_x, axis=1).reshape(exp_x.shape[0], 1)
+            return softmax
         else:
             raise Exception("Invalid output activation function")
 
