@@ -5,6 +5,8 @@ This repository consists of multiple files.
 The wanDB report can be found here:
 https://wandb.ai/cs24m033-iit-madras/DA6401-A1/reports/DA6401-Assignment-1--VmlldzoxMTU4OTk3Mw?accessToken=uuwv18dy0hqw2he56ncjy7shu8fcsasqbw5igugljolpofet2fqaqhbv2cy2mmpd
 
+The github link of this repository:
+https://github.com/ppmurmu/DA6401_assignment1
 
 ## Steps to execute
 1. Clone/Download the repository.
