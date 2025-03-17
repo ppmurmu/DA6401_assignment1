@@ -5,6 +5,7 @@ from ffnn import FFNN
 from backpropagation import Backpropagation
 from optimizers import SGD, MomentumGD, NAG, RMSProp, Adam, NAdam
 import wandb
+from config import sweep_configuration
 
 
 def loss(loss, y, y_pred):
@@ -165,3 +166,12 @@ def sweep():
     })
     
     return nn
+
+#-----------wandb stuff-------------------
+wandb.login()
+
+wandb_id = wandb.sweep(sweep_configuration,entity="cs24m033-iit-madras", project="DA6401-A1")
+
+wandb.agent(wandb_id, function=sweep, count=1)
+
+wandb.finish()
