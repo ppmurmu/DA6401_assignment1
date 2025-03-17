@@ -8,6 +8,14 @@ https://wandb.ai/cs24m033-iit-madras/DA6401-A1/reports/DA6401-Assignment-1--Vmll
 The github link of this repository:
 https://github.com/ppmurmu/DA6401_assignment1
 
+## Pre-requistes
+Please install the following libraries before running:
+- numpy 
+- sklearn.model_selection
+- keras.datasets import fashion_mnist, mnist
+- wandb
+- argparse
+
 ## Steps to execute
 1. Clone/Download the repository.
 2. In the root directory of the repository, run commands as follow:

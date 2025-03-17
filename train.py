@@ -7,7 +7,6 @@ from optimizers import Optimizers
 import wandb
 from config import sweep_configuration
 import argparse
-import json
 
 
 
