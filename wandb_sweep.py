@@ -1,6 +1,9 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.datasets import fashion_mnist, mnist
+from ffnn import FFNN
+from backpropagation import Backpropagation
+from optimizers import SGD, MomentumGD, NAG, RMSProp, Adam, NAdam
 import wandb
 
 
@@ -33,7 +36,39 @@ def load_data(type, dataset='fashion_mnist'):
         return preprocess(x, y)
     elif type == 'test':
         return preprocess(x_test, y_test)
-    
+
+#----choose optimizer------
+def choose_optimizer(nn, 
+                 bp, 
+                 lr=0.001, 
+                 optimizer="sgd", 
+                 momentum=0.9,
+                 epsilon=1e-8,
+                 beta=0.9,
+                 beta1=0.9,
+                 beta2=0.999, 
+                 t=0,
+                 decay=0):
+    if optimizer == "sgd":
+        return SGD(nn, lr=lr, decay=decay)
+    elif optimizer == "momentum":
+        return MomentumGD(nn, lr=lr, momentum=momentum, decay=decay)
+    elif optimizer == "nag":
+        return NAG(nn, lr=lr, momentum=momentum, decay=decay)
+    elif optimizer == "rmsprop":
+        return RMSProp(nn, lr=lr, beta=beta, epsilon=epsilon, decay=decay)
+    elif optimizer == "adam":
+        adam_opt = Adam(nn, lr=lr, beta1=beta1, beta2=beta2, epsilon=epsilon, decay=decay)
+        adam_opt.t = t
+        return adam_opt
+    elif optimizer == "nadam":
+        nadam_opt = NAdam(nn, lr=lr, beta1=beta1, beta2=beta2, epsilon=epsilon, decay=decay)
+        nadam_opt.t = t
+        return nadam_opt
+    else:
+        raise Exception("Invalid optimizer")
+
+
 
 
 def sweep():

@@ -1,7 +1,5 @@
 import numpy as np
 
-
-
 #-------- Stochastic Gradient Descent ------------------
 #nn is the neural network instance we pass.
 class SGD:
