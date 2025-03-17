@@ -1,4 +1,5 @@
-#----backpropagation class----------
+import numpy as np
+
 class Backpropagation():
 
     #initialize values

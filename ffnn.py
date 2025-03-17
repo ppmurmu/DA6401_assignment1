@@ -1,3 +1,5 @@
+import numpy as np
+
 class FFNN():
     def __init__(self, hid_layers, size_hid_layer, weight_init, activation_func, output_activation_function="softmax"):
         self.hidden_layers= hid_layers
