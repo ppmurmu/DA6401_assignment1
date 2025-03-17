@@ -196,7 +196,7 @@ wandb.login()
 args = parse_args()
 sweep_config = create_sweep_config(args)  
 
-#you can change the count to higher values and use config.py file to create various configurations
+#you can change the count value in wandb agent below to higher values and use config.py file to create various configurations
 
 #-----
 
