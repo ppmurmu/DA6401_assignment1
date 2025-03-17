@@ -1,4 +1,4 @@
-## DA6401 Assignment 1
+# DA6401 Assignment 1
 
 This repository consists of multiple files.
 
@@ -6,13 +6,13 @@ The wanDB report can be found here:
 https://wandb.ai/cs24m033-iit-madras/DA6401-A1/reports/DA6401-Assignment-1--VmlldzoxMTU4OTk3Mw?accessToken=uuwv18dy0hqw2he56ncjy7shu8fcsasqbw5igugljolpofet2fqaqhbv2cy2mmpd
 
 
-# Steps to execute
+## Steps to execute
 1. Clone/Download the repository.
 2. In the root directory of the repository, run commands as follow:
    
 python train.py --wandb_entity myname --wandb_project myprojectname
 
-# Arguments to be supported
+## Arguments to be supported
 
 | Name | Default Value | Description |
 | :---: | :-------------: | :----------- |
@@ -35,5 +35,9 @@ python train.py --wandb_entity myname --wandb_project myprojectname
 | `-sz`, `--hidden_size` | 4 | Number of hidden neurons in a feedforward layer. |
 | `-a`, `--activation` | sigmoid | choices:  ["identity", "sigmoid", "tanh", "ReLU"] |
 
+
+## Folder structure
+- The root directory consists of all the files required to run the train.py file.
+- config.py can be modified and added to run sweeps with mulitple configuration.
 
    
