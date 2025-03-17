@@ -3,9 +3,12 @@ from sklearn.model_selection import train_test_split
 from keras.datasets import fashion_mnist, mnist
 from ffnn import FFNN
 from backpropagation import Backpropagation
-from optimizers import SGD, MomentumGD, NAG, RMSProp, Adam, NAdam
+from optimizers import Optimizers
 import wandb
 from config import sweep_configuration
+import argparse
+import json
+
 
 
 def loss(loss, y, y_pred):
@@ -38,36 +41,6 @@ def load_data(type, dataset='fashion_mnist'):
     elif type == 'test':
         return preprocess(x_test, y_test)
 
-#----choose optimizer------
-def choose_optimizer(nn, 
-                 bp, 
-                 lr=0.001, 
-                 optimizer="sgd", 
-                 momentum=0.9,
-                 epsilon=1e-8,
-                 beta=0.9,
-                 beta1=0.9,
-                 beta2=0.999, 
-                 t=0,
-                 decay=0):
-    if optimizer == "sgd":
-        return SGD(nn, lr=lr, decay=decay)
-    elif optimizer == "momentum":
-        return MomentumGD(nn, lr=lr, momentum=momentum, decay=decay)
-    elif optimizer == "nag":
-        return NAG(nn, lr=lr, momentum=momentum, decay=decay)
-    elif optimizer == "rmsprop":
-        return RMSProp(nn, lr=lr, beta=beta, epsilon=epsilon, decay=decay)
-    elif optimizer == "adam":
-        adam_opt = Adam(nn, lr=lr, beta1=beta1, beta2=beta2, epsilon=epsilon, decay=decay)
-        adam_opt.t = t
-        return adam_opt
-    elif optimizer == "nadam":
-        nadam_opt = NAdam(nn, lr=lr, beta1=beta1, beta2=beta2, epsilon=epsilon, decay=decay)
-        nadam_opt.t = t
-        return nadam_opt
-    else:
-        raise Exception("Invalid optimizer")
 
 
 
@@ -99,7 +72,8 @@ def sweep():
                          loss=parameters['loss'],
                          )
     # Choose and configure the optimizer
-    optimizer = choose_optimizer(nn=nn,
+    
+    optimizer = Optimizers(nn=nn,
                     bp=bp,
                     lr=parameters['learning_rate'],
                     optimizer=parameters['optimizer'],
@@ -122,8 +96,9 @@ def sweep():
 
             y_pred = nn.forward_propagation(x_batch)
             d_weights, d_biases = bp.backward(y_batch, y_pred)
-            optimizer.step(d_weights, d_biases)
+            optimizer.run(d_weights, d_biases)
         
+        optimizer.t += 1
         
         #loss and accuracy after each epoch
         y_pred = nn.forward_propagation(x_train_act)
@@ -167,11 +142,51 @@ def sweep():
     
     return nn
 
+
+# Function to parse command-line arguments
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train a Feedforward Neural Network on MNIST/Fashion-MNIST")
+    
+    parser.add_argument("-wp", "--wandb_project", type=str, default="myprojectname", help="Weights & Biases project name")
+    parser.add_argument("-we", "--wandb_entity", type=str, default="myname", help="Weights & Biases entity")
+    parser.add_argument("-d", "--dataset", type=str, choices=["mnist", "fashion_mnist"], default="fashion_mnist", help="Dataset selection")
+    parser.add_argument("-e", "--epochs", type=int, default=5, help="Number of training epochs")
+    parser.add_argument("-b", "--batch_size", type=int, default=32, help="Batch size")
+    parser.add_argument("-l", "--loss", type=str, choices=["mean_squared_error", "cross_entropy"], default="cross_entropy", help="Loss function")
+    parser.add_argument("-o", "--optimizer", type=str, choices=["sgd", "momentum", "nag", "rmsprop", "adam", "nadam"], default="adam", help="Optimizer")
+    parser.add_argument("-lr", "--learning_rate", type=float, default=0.001, help="Learning rate")
+    parser.add_argument("-m", "--momentum", type=float, default=0.9, help="Momentum for applicable optimizers")
+    parser.add_argument("-beta", "--beta", type=float, default=0.9, help="Beta for RMSProp optimizer")
+    parser.add_argument("-beta1", "--beta1", type=float, default=0.9, help="Beta1 for Adam/Nadam optimizers")
+    parser.add_argument("-beta2", "--beta2", type=float, default=0.999, help="Beta2 for Adam/Nadam optimizers")
+    parser.add_argument("-eps", "--epsilon", type=float, default=1e-8, help="Epsilon value for numerical stability")
+    parser.add_argument("-w_d", "--weight_decay", type=float, default=0.0, help="Weight decay for optimizers")
+    parser.add_argument("-w_i", "--weight_init", type=str, choices=["random", "xavier"], default="xavier", help="Weight initialization method")
+    parser.add_argument("-nhl", "--num_layers", type=int, default=3, help="Number of hidden layers")
+    parser.add_argument("-sz", "--hidden_size", type=int, default=64, help="Number of neurons in each hidden layer")
+    parser.add_argument("-a", "--activation", type=str, choices=["identity", "sigmoid", "tanh", "ReLU"], default="ReLU", help="Activation function")
+    
+    return parser.parse_args()
+
+
 #-----------wandb stuff-------------------
 wandb.login()
 
 wandb_id = wandb.sweep(sweep_configuration,entity="cs24m033-iit-madras", project="DA6401-A1")
 
-wandb.agent(wandb_id, function=sweep, count=5)
+wandb.agent(wandb_id, function=sweep, count=1)
 
 wandb.finish()
+
+
+# if __name__ == "__main__":
+#     args = parse_args()
+#     args_dict = vars(args)  # Convert Namespace to dictionary
+#     args_json = json.dumps(args_dict)  # Convert dictionary to JSON string
+#     #-----print(args)-----
+#     print("-------------------------------arg parse ---------------")
+#     print(args_json)
+#     #------print(config)
+#     print("-------------------------------sweep parse ---------------")
+
+#     print(sweep_configuration)
